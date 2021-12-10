@@ -1,24 +1,21 @@
-import { useRoutes } from 'react-router-dom';
-import { Home, NotFound, Product, ProductList } from './screens';
+import { ThemeProvider } from 'styled-components';
+import { useReactiveVar } from '@apollo/client';
 
-function App() {
-  const element = useRoutes([
-    {
-      path: '/',
-      element: <Home />,
-    },
-    {
-      path: '/product',
-      element: <ProductList />,
-      children: [{ path: ':id', element: <Product /> }],
-    },
-    {
-      path: '*',
-      element: <NotFound />,
-    },
-  ]);
+import { darkThemeVar, loggedInVar } from './apollo';
+import Router from './Router';
+import GlobalStyle from './styles/global';
+import { darkTheme, lightTheme } from './styles/theme';
 
-  return element;
-}
+const App = () => {
+  const isLoggedIn = useReactiveVar(loggedInVar);
+  const isDarkMode = useReactiveVar(darkThemeVar);
+
+  return (
+    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+      <GlobalStyle />
+      <Router isLoggedIn={isLoggedIn} isDarkMode={isDarkMode} />
+    </ThemeProvider>
+  );
+};
 
 export default App;
