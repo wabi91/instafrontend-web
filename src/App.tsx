@@ -1,17 +1,24 @@
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { useRoutes } from 'react-router-dom';
+import { Home, NotFound, Product, ProductList } from './screens';
 
-function App(): JSX.Element {
-  return (
-    <div>
-      <Router>
-        <Routes>
-          <Route path="/" element={<div>HOME</div>} />
-          <Route path="/potato" element={<div>Potato</div>} />
-          <Route path="/banana" element={<div>Banana</div>} />
-        </Routes>
-      </Router>
-    </div>
-  );
+function App() {
+  const element = useRoutes([
+    {
+      path: '/',
+      element: <Home />,
+    },
+    {
+      path: '/product',
+      element: <ProductList />,
+      children: [{ path: ':id', element: <Product /> }],
+    },
+    {
+      path: '*',
+      element: <NotFound />,
+    },
+  ]);
+
+  return element;
 }
 
 export default App;
