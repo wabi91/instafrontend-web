@@ -1,21 +1,29 @@
-import { ThemeProvider } from 'styled-components';
-import { useReactiveVar } from '@apollo/client';
+import { ApolloProvider, useReactiveVar } from '@apollo/client';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-import { darkThemeVar, loggedInVar } from './apollo';
-import Router from './Router';
-import GlobalStyle from './styles/global';
-import { darkTheme, lightTheme } from './styles/theme';
+import { client, isAuthVar } from './apollo';
+import { routes } from './routes';
+import { NotFound, Login, CreateAccount, Home } from './screens';
 
-const App = () => {
-  const isLoggedIn = useReactiveVar(loggedInVar);
-  const isDarkMode = useReactiveVar(darkThemeVar);
+function App() {
+  const isAuth = useReactiveVar(isAuthVar);
 
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <GlobalStyle />
-      <Router isLoggedIn={isLoggedIn} isDarkMode={isDarkMode} />
-    </ThemeProvider>
+    <ApolloProvider client={client}>
+      <BrowserRouter>
+        <Routes>
+          <Route path={routes.home} element={isAuth ? <Home /> : <Login />} />
+          <Route
+            path={routes.createAccount}
+            element={
+              !isAuth ? <CreateAccount /> : <Navigate replace to={'/'} />
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </ApolloProvider>
   );
-};
+}
 
 export default App;
